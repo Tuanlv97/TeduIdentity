@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using TeduMicroservices.IDP.Infrastructure.Domains;
 using TeduMicroservices.IDP.Infrastructure.Repositories;
+using TeduMicroservices.IDP.Presentation;
 using TeduMicroservices.IDP.Services.EmailService;
 
 namespace TeduMicroservices.IDP.Extensions;
@@ -58,6 +60,7 @@ internal static class HostingExtensions
         builder.Services.AddConfigurationSettings(builder.Configuration);
 
         // uncomment if you want to add a UI
+        builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
         builder.Services.AddAutoMapper(typeof(Program));
         // Add services to the container
@@ -71,6 +74,15 @@ internal static class HostingExtensions
             typeof(RepositoryBase<,>));
         builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
         builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+        builder.Services.AddControllers(config =>
+        {
+            config.RespectBrowserAcceptHeader = true;
+            config.ReturnHttpNotAcceptable = true;
+            config.Filters.Add(new ProducesAttribute("application/json", "text/plain", "text/json"));
+        }).AddApplicationPart(typeof(AssemblyReference).Assembly);
+
+
+        builder.Services.ConfigureSwagger(builder.Configuration);
 
         return builder.Build();
     }
@@ -88,6 +100,13 @@ internal static class HostingExtensions
         // uncomment if you want to add a UI
         app.UseStaticFiles();
         app.UseCors("CorsPolicy");
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+           // c.OAuthClientId("tedu_microservices_swagger");
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tedu Identity API");
+           // c.DisplayRequestDuration();
+        });
         app.UseRouting();
 
         //set cookie policy before authentication/authorization setup

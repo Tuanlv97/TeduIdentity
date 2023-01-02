@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using TeduMicroservices.IDP.Common;
 using TeduMicroservices.IDP.Infrastructure.Entities;
 using TeduMicroservices.IDP.Infrastructure.Persistence;
@@ -81,5 +82,57 @@ public static class ServiceExtensions
             // .AddUserStore<TeduUserStore>()
             .AddDefaultTokenProviders();
     }
+
+    public static void ConfigureSwagger(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(c =>
+        {
+            c.EnableAnnotations();
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Tedu Identity Server API",
+                Version = "v1",
+                Contact = new OpenApiContact
+                {
+                    Name = "Tedu Identity Service",
+                    Email = "kietpham.dev@gmail.com",
+                    Url = new Uri("https://kietpham.dev")
+                }
+            });
+            var identityServerBaseUrl = configuration.GetSection("IdentityServer:BaseUrl").Value;
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    Implicit = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = new Uri($"{identityServerBaseUrl}/connect/authorize"),
+                        Scopes = new Dictionary<string, string>
+                        {
+                            { "tedu_microservices_api.read", "Tedu Microservices API Read Scope" },
+                            { "tedu_microservices_api.write", "Tedu Microservices API Write Scope" }
+                        }
+                    }
+                }
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                    },
+                    new List<string>
+                    {
+                        "tedu_microservices_api.read",
+                        "tedu_microservices_api.write"
+                    }
+                }
+            });
+        });
+    }
+
 
 }
