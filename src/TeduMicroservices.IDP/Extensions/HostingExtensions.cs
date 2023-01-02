@@ -81,7 +81,8 @@ internal static class HostingExtensions
             config.Filters.Add(new ProducesAttribute("application/json", "text/plain", "text/json"));
         }).AddApplicationPart(typeof(AssemblyReference).Assembly);
 
-
+        builder.Services.ConfigureAuthentication();
+        builder.Services.ConfigureAuthorization();
         builder.Services.ConfigureSwagger(builder.Configuration);
 
         return builder.Build();
@@ -108,6 +109,7 @@ internal static class HostingExtensions
             c.DisplayRequestDuration();
         });
         app.UseRouting();
+        app.UseMiddleware<ErrorWrappingMiddleware>(); 
 
         //set cookie policy before authentication/authorization setup
         app.UseCookiePolicy();
@@ -117,7 +119,7 @@ internal static class HostingExtensions
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapDefaultControllerRoute();
+            endpoints.MapDefaultControllerRoute().RequireAuthorization("Bearer");
             endpoints.MapRazorPages().RequireAuthorization();
         });
 

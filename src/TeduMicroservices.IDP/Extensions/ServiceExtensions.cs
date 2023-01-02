@@ -83,6 +83,30 @@ public static class ServiceExtensions
             .AddDefaultTokenProviders();
     }
 
+    public static void ConfigureAuthentication(this IServiceCollection services)
+    {
+        services
+            .AddAuthentication()
+            .AddLocalApi("Bearer", option =>
+            {
+                option.ExpectedScope = "tedu_microservices_api.read";
+            });
+    }
+
+    public static void ConfigureAuthorization(this IServiceCollection services)
+    {
+        services.AddAuthorization(
+            options =>
+            {
+                options.AddPolicy("Bearer", policy =>
+                {
+                    policy.AddAuthenticationSchemes("Bearer");
+                    policy.RequireAuthenticatedUser();
+                });
+            });
+    }
+
+
     public static void ConfigureSwagger(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddEndpointsApiExplorer();
@@ -96,7 +120,7 @@ public static class ServiceExtensions
                 Contact = new OpenApiContact
                 {
                     Name = "Tedu Identity Service",
-                    Email = "kietpham.dev@gmail.com",
+                    Email = "Anhtuan.dev@gmail.com",
                     Url = new Uri("https://kietpham.dev")
                 }
             });
