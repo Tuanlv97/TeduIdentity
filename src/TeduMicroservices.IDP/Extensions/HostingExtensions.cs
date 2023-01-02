@@ -103,9 +103,9 @@ internal static class HostingExtensions
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-           // c.OAuthClientId("tedu_microservices_swagger");
+            c.OAuthClientId("tedu_microservices_swagger");
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tedu Identity API");
-           // c.DisplayRequestDuration();
+            c.DisplayRequestDuration();
         });
         app.UseRouting();
 
