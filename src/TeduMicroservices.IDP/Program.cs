@@ -1,5 +1,5 @@
-﻿using TeduMicroservices.IDP;
-using Serilog;
+﻿using Serilog;
+using TeduMicroservices.IDP.Extensions;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -11,11 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 try
 {
-
-    builder.Host.UseSerilog((ctx, lc) => lc
-        .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
-        .Enrich.FromLogContext()
-        .ReadFrom.Configuration(ctx.Configuration));
 
     var app = builder
         .ConfigureServices()
