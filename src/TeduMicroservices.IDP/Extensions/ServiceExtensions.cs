@@ -79,7 +79,7 @@ public static class ServiceExtensions
                 opt.Lockout.MaxFailedAccessAttempts = 3;
             })
             .AddEntityFrameworkStores<TeduIdentityContext>()
-            // .AddUserStore<TeduUserStore>()
+            .AddUserStore<TeduUserStore>()
             .AddDefaultTokenProviders();
     }
 
@@ -121,7 +121,7 @@ public static class ServiceExtensions
                 {
                     Name = "Tedu Identity Service",
                     Email = "Anhtuan.dev@gmail.com",
-                    Url = new Uri("https://kietpham.dev")
+                    Url = new Uri("https://anhtuan.dev")
                 }
             });
             var identityServerBaseUrl = configuration.GetSection("IdentityServer:BaseUrl").Value;
