@@ -9,3 +9,6 @@
 4: dotnet ef database update -c ConfigurationDbContext
 5: Add-Migration InitialTeduIdentityMigration -c TeduIdentityContext -o Persistence/Migraions
 6: dotnet ef database update -c TeduIdentityContext
+
+# Docker
+1: docker-compose -f docker-compose.yml up -d --build
