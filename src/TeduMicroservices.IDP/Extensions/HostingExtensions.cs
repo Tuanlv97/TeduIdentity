@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
@@ -84,6 +86,7 @@ internal static class HostingExtensions
         builder.Services.ConfigureAuthentication();
         builder.Services.ConfigureAuthorization();
         builder.Services.ConfigureSwagger(builder.Configuration);
+        builder.Services.ConfigureHealthChecks(builder.Configuration);
 
         return builder.Build();
     }
@@ -119,6 +122,11 @@ internal static class HostingExtensions
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
             endpoints.MapDefaultControllerRoute().RequireAuthorization("Bearer");
             endpoints.MapRazorPages().RequireAuthorization();
         });

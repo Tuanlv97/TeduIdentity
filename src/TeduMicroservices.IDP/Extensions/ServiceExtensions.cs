@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using TeduMicroservices.IDP.Common;
 using TeduMicroservices.IDP.Infrastructure.Entities;
@@ -92,6 +93,15 @@ public static class ServiceExtensions
                 option.ExpectedScope = "tedu_microservices_api.read";
             });
     }
+
+    public static void ConfigureHealthChecks(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("IdentitySqlConnection");
+        services.AddHealthChecks()
+            .AddSqlServer(connectionString, name: "Identity SQL Health", failureStatus: HealthStatus.Degraded);
+    }
+
+
 
     public static void ConfigureAuthorization(this IServiceCollection services)
     {
