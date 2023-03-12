@@ -7,6 +7,13 @@
     <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Public\**" />
+    <Content Remove="Public\**" />
+    <EmbeddedResource Remove="Public\**" />
+    <None Remove="Public\**" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="6.0.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
